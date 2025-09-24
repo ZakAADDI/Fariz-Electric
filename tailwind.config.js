@@ -1,0 +1,22 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    './resources/**/*.blade.php',
+    './resources/**/*.js',
+    './resources/**/*.vue',
+    './resources/**/*.ts',
+    './resources/**/*.jsx',
+    './resources/**/*.tsx',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: '#1E40AF',
+        success: '#10B981',
+        accent: '#FACC15',
+        neutral: '#FFFFFF',
+      },
+    },
+  },
+  plugins: [],
+};
