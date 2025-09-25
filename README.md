@@ -77,4 +77,4 @@ php artisan optimize
 - Formulaire de contact: vérifier variables MAIL_* et les logs `storage/logs/laravel.log`
 
 ## Licence
-Code sous licence MIT. © Fariz Electric
+Code sous licence MIT. © Fariz Electric - Développé par Infinity Dev
