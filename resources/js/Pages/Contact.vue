@@ -23,7 +23,7 @@
   <!-- Contact -->
   <section class="pt-8 sm:pt-12 md:pt-16 bg-neutral">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-start">
 
         <!-- Formulaire -->
         <div
@@ -94,6 +94,32 @@
                 class="inline-flex items-center justify-center w-full px-5 py-3 rounded-md border border-white text-white font-semibold bg-[#539254]/80 hover:bg-[#539254] cursor-pointer">
                 Envoyer
               </button>
+            </div>
+
+            <!-- Message de succès global (après les 2 cartes) -->
+            <div v-if="showSuccessMessage" role="status" aria-live="polite" class="mt-6">
+              <div
+                class="max-w-3xl mx-auto flex items-center gap-2 rounded-md border border-[#539254]/30 bg-[#539254]/10 text-[#539254] px-4 py-3">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="2" opacity="0.25" />
+                  <path d="M7 12l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+                <span class="font-medium">Merci ! Votre message a été envoyé avec succès !</span>
+              </div>
+            </div>
+
+            <!-- Message d'erreur global (après les 2 cartes) -->
+            <div v-if="hasSubmitError && !showSuccessMessage" role="alert" aria-live="assertive" class="mt-4">
+              <div
+                class="max-w-3xl mx-auto flex items-center gap-2 rounded-md border border-red-300 bg-red-50 text-red-700 px-4 py-3">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="2" opacity="0.25" />
+                  <path d="M12 8v4m0 4h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+                <span class="font-medium">Une erreur s'est produite lors de l'envoi. Veuillez réessayer.</span>
+              </div>
             </div>
           </form>
         </div>
@@ -172,32 +198,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Message de succès global (après les 2 cartes) -->
-      <div v-if="form.recentlySuccessful" role="status" aria-live="polite" class="mt-6">
-        <div
-          class="max-w-3xl mx-auto flex items-center gap-2 rounded-md border border-[#539254]/30 bg-[#539254]/10 text-[#539254] px-4 py-3">
-          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="2" opacity="0.25" />
-            <path d="M7 12l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" />
-          </svg>
-          <span class="font-medium">Merci ! Votre message a été envoyé avec succès !</span>
-        </div>
-      </div>
-
-      <!-- Message d'erreur global (après les 2 cartes) -->
-      <div v-if="hasSubmitError && !form.recentlySuccessful" role="alert" aria-live="assertive" class="mt-4">
-        <div
-          class="max-w-3xl mx-auto flex items-center gap-2 rounded-md border border-red-300 bg-red-50 text-red-700 px-4 py-3">
-          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="2" opacity="0.25" />
-            <path d="M12 8v4m0 4h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" />
-          </svg>
-          <span class="font-medium">Une erreur s'est produite lors de l'envoi. Veuillez réessayer.</span>
-        </div>
-      </div>
     </div>
   </section>
 </template>
@@ -210,6 +210,9 @@ import contactBgImage from '/public/assets/images/hero-bg-contact-page-image.png
 const heroEnter = ref(false)
 const leftEnter = ref(false)
 const rightEnter = ref(false)
+const hasSubmitError = ref(false)
+const showSuccessMessage = ref(false)
+
 const form = useForm({
   name: '',
   firstname: '',
@@ -220,10 +223,21 @@ const form = useForm({
 })
 
 const submit = () => {
+  hasSubmitError.value = false
+  showSuccessMessage.value = false
+  
   form.post('/contact', {
     preserveScroll: true,
     onSuccess: () => {
       form.reset()
+      showSuccessMessage.value = true
+      // Masquer le message de succès après 5 secondes
+      setTimeout(() => {
+        showSuccessMessage.value = false
+      }, 5000)
+    },
+    onError: () => {
+      hasSubmitError.value = true
     },
   })
 }
